@@ -81,3 +81,5 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 - Implemented `POST /api/employees` with Zod validation (`employeeSchema.safeParse`). Returns `201` with the created employee; invalid JSON or validation errors return `400` with `fieldErrors`. Tested with `curl`. (curl -X POST http://localhost:3000/api/employees \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"Anna\",\"surname\":\"Kowalska\",\"position\":\"Developer\",\"project\":\"Acme Portal\",\"hourlyRate\":85,\"hoursWorked\":120,\"status\":\"active\"}")
+
+- Added `prisma/seed.ts` with 10 sample employees across three projects. Run `npm run db:seed` after migrate to populate the database; verified with `curl http://localhost:3000/api/employees`.
