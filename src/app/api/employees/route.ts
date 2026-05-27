@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { employeeStatuses, type EmployeeStatus } from "@/lib/validations";
+import { employeeStatuses, type EmployeeStatus, employeeSchema } from "@/lib/validations";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -27,4 +27,30 @@ export async function GET(request: NextRequest) {
   });
 
   return NextResponse.json(employees);
+}
+
+export async function POST(request: NextRequest) {
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const parsed = employeeSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        error: "Validation failed",
+        details: parsed.error.flatten().fieldErrors,
+      },
+      { status: 400 },
+    );
+  }
+
+  const employee = await prisma.employee.create({ data: parsed.data });
+
+  return NextResponse.json(employee, { status: 201 });
 }

@@ -71,3 +71,7 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 ## Development log per commit following scaffolding commit
 
 - Implemented `GET /api/employees` with optional `project` and `status` query filters. Tested with `curl`; empty database returns `[]`. (curl http://localhost:3000/api/employees)
+
+- Implemented `POST /api/employees` with Zod validation (`employeeSchema.safeParse`). Returns `201` with the created employee; invalid JSON or validation errors return `400` with `fieldErrors`. Tested with `curl`. (curl -X POST http://localhost:3000/api/employees \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"Anna\",\"surname\":\"Kowalska\",\"position\":\"Developer\",\"project\":\"Acme Portal\",\"hourlyRate\":85,\"hoursWorked\":120,\"status\":\"active\"}")
