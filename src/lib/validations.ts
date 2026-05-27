@@ -13,3 +13,4 @@ export const employeeSchema = z.object({
 });
 
 export type EmployeeInput = z.infer<typeof employeeSchema>;
+export type EmployeeStatus = (typeof employeeStatuses)[number];
