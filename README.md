@@ -68,6 +68,12 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 
 - **Database:** SQLite via Prisma for local development (`prisma/dev.db`).
 
+- **Backend:** Node.js via Next.js Route Handlers (no separate Express/NestJS server).
+
+- **HTTP:** Successful create returns `201 Created`; list returns `200` with a JSON array (`[]` when empty).
+
+- **Validation:** Request bodies for create (and update, when implemented) are validated with Zod before database writes.
+
 ## Development log per commit following scaffolding commit
 
 - Implemented `GET /api/employees` with optional `project` and `status` query filters. Tested with `curl`; empty database returns `[]`. (curl http://localhost:3000/api/employees)
