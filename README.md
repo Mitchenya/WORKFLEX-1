@@ -51,3 +51,8 @@ Technical requirements:
 - A short README.md: how to start, what assumptions, what would you add with more time
 
 Out of scope: polished styling, authorization, deployment, E2E testing. Unit tests on key logic — welcome but optional.
+
+
+## Development log per commit following scaffolding commit
+
+- Implemented `GET /api/employees` with optional `project` and `status` query filters. Tested with `curl`; empty database returns `[]`. (curl http://localhost:3000/api/employees)
