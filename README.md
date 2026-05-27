@@ -83,3 +83,7 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
   -d "{\"name\":\"Anna\",\"surname\":\"Kowalska\",\"position\":\"Developer\",\"project\":\"Acme Portal\",\"hourlyRate\":85,\"hoursWorked\":120,\"status\":\"active\"}")
 
 - Added `prisma/seed.ts` with 10 sample employees across three projects. Run `npm run db:seed` after migrate to populate the database; verified with `curl http://localhost:3000/api/employees`.
+
+- Implemented `GET /api/employees/[id]` with id validation (`400` invalid id, `404` not found, `200` when the row exists). Tested with `curl -i http://localhost:3000/api/employees/<id>`.
+
+- **Testing note:** Re-running `npm run db:seed` does not guarantee ids 1–10 (SQLite keeps auto-incrementing). Use an `id` from `GET /api/employees`, or run `npx prisma migrate reset` for a fresh database.
