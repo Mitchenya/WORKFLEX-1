@@ -52,6 +52,21 @@ Technical requirements:
 
 Out of scope: polished styling, authorization, deployment, E2E testing. Unit tests on key logic — welcome but optional.
 
+## Assumptions
+
+- **Architecture:** Single Next.js app (App Router) with API routes under `/api` and a React frontend in the same repo.
+
+- **Hours worked:** The brief requires project cost as `hours × rate`, but does not list a hours field on employees. Each employee has `hoursWorked` for cost calculation (used when the summary endpoint is implemented).
+
+- **Project:** Stored as a string on each employee, not a separate Project entity. List filters use exact, case-sensitive match on `project`.
+
+- **Status:** `active`, `inactive`, or `on_leave`. Invalid `?status=` on `GET /api/employees` returns HTTP 400.
+
+- **List behaviour:** `GET /api/employees` returns all matches with no pagination, ordered by surname then name. An empty database returns `[]`.
+
+- **Authentication:** Not implemented (out of scope for this task).
+
+- **Database:** SQLite via Prisma for local development (`prisma/dev.db`).
 
 ## Development log per commit following scaffolding commit
 
