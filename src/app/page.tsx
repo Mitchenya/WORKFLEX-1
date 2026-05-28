@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { EmployeeFormSection } from "@/app/components/EmployeeFormSection";
 import { EmployeesTable } from "@/app/components/EmployeesTable";
@@ -12,7 +12,7 @@ import {
   EmployeePayload,
   SummaryResponse,
   emptyForm,
-} from "./types/employee";
+} from "@/app/types/employee";
 
 export default function HomePage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -30,8 +30,6 @@ export default function HomePage() {
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
 
   const editSectionRef = useRef<HTMLElement | null>(null);
-
-  const projectOptions = useMemo(() => allProjects, [allProjects]);
 
   const loadEmployees = useCallback(async () => {
     setIsLoading(true);
@@ -237,7 +235,7 @@ export default function HomePage() {
       <FiltersSection
         projectFilter={projectFilter}
         statusFilter={statusFilter}
-        projectOptions={projectOptions}
+        projectOptions={allProjects}
         onProjectFilterChange={setProjectFilter}
         onStatusFilterChange={setStatusFilter}
         onRefresh={() => void loadEmployees()}
@@ -245,7 +243,7 @@ export default function HomePage() {
 
       <ProjectSummarySection
         summaryProject={summaryProject}
-        projectOptions={projectOptions}
+        projectOptions={allProjects}
         summary={summary}
         onSummaryProjectChange={setSummaryProject}
         onSubmit={loadSummary}

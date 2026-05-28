@@ -1,3 +1,4 @@
+import { makeRequest } from "@/test/request-helpers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const prismaMocks = vi.hoisted(() => ({
@@ -10,11 +11,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { GET } from "./route";
-
-function makeRequest(url: string, init?: RequestInit) {
-  return new Request(url, init);
-}
+import { GET } from "@/app/api/employees/summary/route";
 
 describe("employees summary route", () => {
   beforeEach(() => {

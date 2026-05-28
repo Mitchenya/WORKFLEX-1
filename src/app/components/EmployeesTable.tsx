@@ -1,4 +1,4 @@
-import { Employee } from "../types/employee";
+import { Employee } from "@/app/types/employee";
 
 type Props = {
   employees: Employee[];

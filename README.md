@@ -26,6 +26,7 @@ Verify the API: [http://localhost:3000/api/health](http://localhost:3000/api/hea
 | `npm run test` | Run unit tests (Vitest) |
 | `npm run db:migrate` | Apply Prisma migrations |
 | `npm run db:generate` | Regenerate Prisma client |
+| `npm run db:seed` | Seed sample employee data |
 
 ## First run checklist
 
@@ -128,11 +129,11 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 
 - **HTTP:** Successful create returns `201 Created`; list returns `200` with a JSON array (`[]` when empty).
 
-- **Validation:** Request bodies for create (and update, when implemented) are validated with Zod before database writes.
+- **Validation:** Request bodies for create and update are validated with Zod before database writes.
 
-- **Route handler typing** Next.js App Router route handlers use canonical RouteContext typing (async params) instead of inline context type literals; this standardizes typing only and does not change runtime behavior.
+- **Route handler typing:** Next.js App Router route handlers use canonical RouteContext typing (async params) instead of inline context type literals; this standardizes typing only and does not change runtime behavior.
 
-- **Patch / Put** Employee edits are implemented with `PUT /api/employees/[id]` (full update) rather than `PATCH`, since the brief does not require partial updates.
+- **Patch / Put:** Employee edits are implemented with `PUT /api/employees/[id]` (full update) rather than `PATCH`, since the brief does not require partial updates.
 
 ## Development log per commit following scaffolding commit
 
@@ -142,11 +143,11 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
   -H "Content-Type: application/json" \
   -d "{\"name\":\"Anna\",\"surname\":\"Kowalska\",\"position\":\"Developer\",\"project\":\"Acme Portal\",\"hourlyRate\":85,\"hoursWorked\":120,\"status\":\"active\"}"
 
-- Added `prisma/seed.ts` with 10 sample employees across three projects. Run `npm run db:seed` after migrate to populate the database; verified with `curl http://localhost:3000/api/employees`.
+- Added `prisma/seed.ts` with 40 sample employees across five projects. Run `npm run db:seed` after migrate to populate the database; verified with `curl http://localhost:3000/api/employees`.
 
 - Implemented `GET /api/employees/[id]` with id validation (`400` invalid id, `404` not found, `200` when the row exists). Tested with `curl -i http://localhost:3000/api/employees/<id>`.
 
-- **Testing note:** Re-running `npm run db:seed` does not guarantee ids 1–10 (SQLite keeps auto-incrementing). Use an `id` from `GET /api/employees`, or run `npx prisma migrate reset` for a fresh database.
+- **Testing note:** Re-running `npm run db:seed` does not guarantee stable ids (SQLite keeps auto-incrementing). Use an `id` from `GET /api/employees`, or run `npx prisma migrate reset` for a fresh database.
 
 - Implemented `PUT /api/employees/[id]` with path id validation and Zod request-body validation. Returns `200` with the updated employee; invalid id/JSON/schema return `400`, and missing employee returns `404`. Tested with: curl -i -X PUT http://localhost:3000/api/employees/5 \
   -H "Content-Type: application/json" \
@@ -162,7 +163,7 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 
 - Add `PATCH /api/employees/[id]` alongside `PUT` to support partial updates (e.g., status-only changes) without requiring the full employee payload.
 - Add pagination/sorting/search for `GET /api/employees` (`page`, `limit`, `sort`, `q`) to support larger datasets.
-- Add server-side tests (`Vitest`/`Jest`) for route handlers and validation edge cases (`400`/`404`/invalid JSON).
+- Expand API route test coverage (PUT success paths, DELETE edge cases, summary with empty projects).
 - Add optimistic UI updates + request deduping/caching (`React Query` or `SWR`) to reduce duplicate fetches and improve responsiveness.
 - Add better money/time handling (currency formatting, decimal-safe math, validation rules for `hourlyRate`/`hoursWorked`).
 - Add authentication/authorization (role-based actions for create/edit/delete).
@@ -170,9 +171,6 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 - Add stronger UX/accessibility: toast feedback, confirm modals, loading/empty/error states, keyboard and ARIA improvements.
 - Add Docker + CI pipeline (`lint`, type-check, tests, build) for consistent local/dev deployment.
 - Move `project` to a dedicated entity/table with foreign keys to improve data integrity and reporting.
-
-
-
 
 ---
 
@@ -205,6 +203,8 @@ Sprawdz API: [http://localhost:3000/api/health](http://localhost:3000/api/health
 | `npm run build` | Buduje wersje produkcyjna |
 | `npm run db:migrate` | Wykonuje migracje Prisma |
 | `npm run db:generate` | Regeneruje klienta Prisma |
+| `npm run test` | Uruchamia testy jednostkowe (Vitest) |
+| `npm run db:seed` | Seeduje przykladowe dane pracownikow |
 
 ## Pierwsze uruchomienie (checklista)
 
@@ -264,7 +264,7 @@ Poza zakresem: dopracowany styling, autoryzacja, wdrozenie, testy E2E. Testy jed
 
 - **HTTP:** Poprawne utworzenie zwraca `201 Created`; lista zwraca `200` i tablice JSON (`[]` gdy pusta).
 
-- **Walidacja:** Ciala zapytan dla create (oraz update, gdy zaimplementowany) sa walidowane przez Zod przed zapisem do bazy.
+- **Walidacja:** Ciala zapytan dla create i update sa walidowane przez Zod przed zapisem do bazy.
 
 - **Typowanie route handlerow:** Route handlery w Next.js App Router uzywaja kanonicznego typowania RouteContext (asynchroniczne params) zamiast inline literal types; to standaryzuje typy i nie zmienia zachowania runtime.
 
@@ -278,11 +278,11 @@ Poza zakresem: dopracowany styling, autoryzacja, wdrozenie, testy E2E. Testy jed
   -H "Content-Type: application/json" \
   -d "{\"name\":\"Anna\",\"surname\":\"Kowalska\",\"position\":\"Developer\",\"project\":\"Acme Portal\",\"hourlyRate\":85,\"hoursWorked\":120,\"status\":\"active\"}"
 
-- Dodano `prisma/seed.ts` z 10 przykladowymi pracownikami w trzech projektach. Uruchom `npm run db:seed` po migracji, aby wypelnic baze; zweryfikowano przez `curl http://localhost:3000/api/employees`.
+- Dodano `prisma/seed.ts` z 40 przykladowymi pracownikami w pieciu projektach. Uruchom `npm run db:seed` po migracji, aby wypelnic baze; zweryfikowano przez `curl http://localhost:3000/api/employees`.
 
 - Zaimplementowano `GET /api/employees/[id]` z walidacja id (`400` dla niepoprawnego id, `404` gdy nie znaleziono, `200` gdy rekord istnieje). Przetestowano przez `curl -i http://localhost:3000/api/employees/<id>`.
 
-- **Uwaga testowa:** Ponowne uruchomienie `npm run db:seed` nie gwarantuje id 1-10 (SQLite kontynuuje auto-increment). Uzyj id z `GET /api/employees` albo uruchom `npx prisma migrate reset`, aby odswiezyc baze.
+- **Uwaga testowa:** Ponowne uruchomienie `npm run db:seed` nie gwarantuje stabilnych id (SQLite kontynuuje auto-increment). Uzyj id z `GET /api/employees` albo uruchom `npx prisma migrate reset`, aby odswiezyc baze.
 
 - Zaimplementowano `PUT /api/employees/[id]` z walidacja id w sciezce i walidacja ciala przez Zod. Zwraca `200` ze zaktualizowanym pracownikiem; niepoprawne id/JSON/schemat zwracaja `400`, a brak pracownika zwraca `404`. Test: curl -i -X PUT http://localhost:3000/api/employees/5 \
   -H "Content-Type: application/json" \
@@ -298,7 +298,7 @@ Poza zakresem: dopracowany styling, autoryzacja, wdrozenie, testy E2E. Testy jed
 
 - Dodac `PATCH /api/employees/[id]` obok `PUT`, aby wspierac czesciowe aktualizacje (np. sama zmiana statusu) bez wysylania calego payloadu pracownika.
 - Dodac paginacje/sortowanie/wyszukiwanie dla `GET /api/employees` (`page`, `limit`, `sort`, `q`) pod wieksze zbiory danych.
-- Dodac testy backendowe (`Vitest`/`Jest`) dla route handlerow i przypadkow brzegowych walidacji (`400`/`404`/niepoprawny JSON).
+- Rozszerzyc pokrycie testami API (sciezki sukcesu PUT, przypadki brzegowe DELETE, summary dla pustych projektow).
 - Dodac optymistyczne aktualizacje UI + deduplikacje/cache zapytan (`React Query` lub `SWR`) w celu ograniczenia duplikatow fetch i poprawy responsywnosci.
 - Dodac lepsza obsluge pieniedzy/czasu (formatowanie waluty, bezpieczna matematyka dziesietna, reguly walidacji dla `hourlyRate`/`hoursWorked`).
 - Dodac uwierzytelnianie/autoryzacje (akcje oparte o role dla create/edit/delete).

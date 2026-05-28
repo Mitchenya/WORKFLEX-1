@@ -1,4 +1,4 @@
-import { EmployeeForm, statusOptions } from "../types/employee";
+import { EmployeeForm, statusOptions } from "@/app/types/employee";
 
 type Props = {
   editSectionRef: React.RefObject<HTMLElement | null>;

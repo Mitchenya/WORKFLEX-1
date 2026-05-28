@@ -1,4 +1,4 @@
-import { statusOptions } from "../types/employee";
+import { statusOptions } from "@/app/types/employee";
 
 type Props = {
   projectFilter: string;

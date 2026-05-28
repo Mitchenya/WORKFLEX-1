@@ -1,3 +1,4 @@
+import { makeContext, makeRequest } from "@/test/request-helpers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const prismaMocks = vi.hoisted(() => ({
@@ -12,15 +13,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { DELETE, GET, PUT } from "./route";
-
-function makeContext(id: string) {
-  return { params: Promise.resolve({ id }) };
-}
-
-function makeRequest(url: string, init?: RequestInit) {
-  return new Request(url, init);
-}
+import { DELETE, GET, PUT } from "@/app/api/employees/[id]/route";
 
 describe("employee by id route", () => {
   beforeEach(() => {

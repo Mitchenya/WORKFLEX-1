@@ -1,4 +1,4 @@
-import { SummaryResponse } from "../types/employee";
+import { SummaryResponse } from "@/app/types/employee";
 
 type Props = {
   summaryProject: string;
