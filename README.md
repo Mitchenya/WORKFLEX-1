@@ -74,6 +74,8 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 
 - **Validation:** Request bodies for create (and update, when implemented) are validated with Zod before database writes.
 
+- **Route handler typing** Next.js App Router route handlers use canonical RouteContext typing (async params) instead of inline context type literals; this standardizes typing only and does not change runtime behavior.
+
 ## Development log per commit following scaffolding commit
 
 - Implemented `GET /api/employees` with optional `project` and `status` query filters. Tested with `curl`; empty database returns `[]`. (curl http://localhost:3000/api/employees)
