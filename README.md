@@ -105,3 +105,131 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 ## With more time
 
 - Add `PATCH /api/employees/[id]` alongside `PUT` to support partial updates (e.g., status-only changes) without requiring the full employee payload.
+- Add pagination/sorting/search for `GET /api/employees` (`page`, `limit`, `sort`, `q`) to support larger datasets.
+- Add server-side tests (`Vitest`/`Jest`) for route handlers and validation edge cases (`400`/`404`/invalid JSON).
+- Add optimistic UI updates + request deduping/caching (`React Query` or `SWR`) to reduce duplicate fetches and improve responsiveness.
+- Add better money/time handling (currency formatting, decimal-safe math, validation rules for `hourlyRate`/`hoursWorked`).
+- Add authentication/authorization (role-based actions for create/edit/delete).
+- Add audit metadata (`createdBy`, `updatedBy`, change history) for traceability.
+- Add stronger UX/accessibility: toast feedback, confirm modals, loading/empty/error states, keyboard and ARIA improvements.
+- Add Docker + CI pipeline (`lint`, type-check, tests, build) for consistent local/dev deployment.
+- Move `project` to a dedicated entity/table with foreign keys to improve data integrity and reporting.
+
+
+
+# WORKFLEX-1
+
+Miniaplikacja do zarzadzania pracownikami i projektami (kontekst outsourcingu pracownikow WORKFLEX).
+
+## Szybki start
+
+**Wymagania wstepne:** Node.js 20+ oraz npm.
+
+```bash
+cp .env.example .env
+npm install
+npx prisma migrate dev --name init
+npm run dev
+```
+
+Otworz [http://localhost:3000](http://localhost:3000).
+
+Sprawdz API: [http://localhost:3000/api/health](http://localhost:3000/api/health)
+
+### Skrypty
+
+| Skrypt | Opis |
+| --- | --- |
+| `npm run dev` | Uruchamia serwer deweloperski |
+| `npm run build` | Buduje wersje produkcyjna |
+| `npm run db:migrate` | Wykonuje migracje Prisma |
+| `npm run db:generate` | Regeneruje klienta Prisma |
+
+## Stos technologiczny
+
+- **Frontend:** Next.js 15 (App Router) + React + TypeScript
+- **Backend:** Next.js Route Handlers w `src/app/api`
+- **Baza danych:** SQLite przez Prisma ORM
+- **Walidacja:** schemat Zod w `src/lib/validations.ts`
+
+## Oryginalne wymagania zadania
+
+Wymagania funkcjonalne:
+
+- Lista pracownikow (imie, nazwisko, stanowisko, projekt, stawka godzinowa, status)
+- Dodawanie/edycja/usuwanie pracownika (CRUD)
+- Filtrowanie po projekcie i statusie
+- Endpoint REST GET `/api/employees/summary?project=X` — zwraca calkowity koszt projektu (suma godzin × stawka)
+
+Wymagania techniczne:
+
+- Frontend: React + TypeScript (preferowany Next.js)
+- Backend: Node.js
+- Baza danych: dowolna
+- Walidacja po stronie backendu
+- Krotki README.md: jak uruchomic, jakie zalozenia, co dodalbys przy wiekszej ilosci czasu
+
+Poza zakresem: dopracowany styling, autoryzacja, wdrozenie, testy E2E. Testy jednostkowe kluczowej logiki — mile widziane, ale opcjonalne.
+
+## Zalozenia
+
+- **Architektura:** Jedna aplikacja Next.js (App Router) z trasami API pod `/api` i frontendem React w tym samym repozytorium.
+
+- **Przepracowane godziny:** Wymaganie mowi o koszcie projektu jako `godziny × stawka`, ale nie wymienia pola godzin przy pracowniku. Kazdy pracownik ma pole `hoursWorked` do obliczania kosztu (uzywane przy implementacji endpointu podsumowania).
+
+- **Projekt:** Przechowywany jako string przy pracowniku, bez osobnej encji Project. Filtry listy uzywaja dokladnego, wrazliwego na wielkosc liter dopasowania po `project`.
+
+- **Status:** `active`, `inactive` lub `on_leave`. Niepoprawny `?status=` w `GET /api/employees` zwraca HTTP 400.
+
+- **Zachowanie listy:** `GET /api/employees` zwraca wszystkie pasujace rekordy bez paginacji, posortowane po nazwisku, potem imieniu. Pusta baza zwraca `[]`.
+
+- **Uwierzytelnianie:** Niezaimplementowane (poza zakresem tego zadania).
+
+- **Baza danych:** SQLite przez Prisma do lokalnego developmentu (`prisma/dev.db`).
+
+- **Backend:** Node.js przez Next.js Route Handlers (bez osobnego serwera Express/NestJS).
+
+- **HTTP:** Poprawne utworzenie zwraca `201 Created`; lista zwraca `200` i tablice JSON (`[]` gdy pusta).
+
+- **Walidacja:** Ciala zapytan dla create (oraz update, gdy zaimplementowany) sa walidowane przez Zod przed zapisem do bazy.
+
+- **Typowanie route handlerow:** Route handlery w Next.js App Router uzywaja kanonicznego typowania RouteContext (asynchroniczne params) zamiast inline literal types; to standaryzuje typy i nie zmienia zachowania runtime.
+
+- **Patch / Put:** Edycja pracownika jest zaimplementowana przez `PUT /api/employees/[id]` (pelna aktualizacja), a nie `PATCH`, poniewaz zadanie nie wymaga czesciowych aktualizacji.
+
+## Dziennik prac per commit po commicie scaffoldu
+
+- Zaimplementowano `GET /api/employees` z opcjonalnymi filtrami query `project` i `status`. Przetestowano przez `curl`; pusta baza zwraca `[]`. `curl http://localhost:3000/api/employees`
+
+- Zaimplementowano `POST /api/employees` z walidacja Zod `employeeSchema.safeParse`. Zwraca `201` z utworzonym pracownikiem; niepoprawny JSON lub bledy walidacji zwracaja `400` z `fieldErrors`. Przetestowano przez `curl`. curl -X POST http://localhost:3000/api/employees \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"Anna\",\"surname\":\"Kowalska\",\"position\":\"Developer\",\"project\":\"Acme Portal\",\"hourlyRate\":85,\"hoursWorked\":120,\"status\":\"active\"}"
+
+- Dodano `prisma/seed.ts` z 10 przykladowymi pracownikami w trzech projektach. Uruchom `npm run db:seed` po migracji, aby wypelnic baze; zweryfikowano przez `curl http://localhost:3000/api/employees`.
+
+- Zaimplementowano `GET /api/employees/[id]` z walidacja id (`400` dla niepoprawnego id, `404` gdy nie znaleziono, `200` gdy rekord istnieje). Przetestowano przez `curl -i http://localhost:3000/api/employees/<id>`.
+
+- **Uwaga testowa:** Ponowne uruchomienie `npm run db:seed` nie gwarantuje id 1-10 (SQLite kontynuuje auto-increment). Uzyj id z `GET /api/employees` albo uruchom `npx prisma migrate reset`, aby odswiezyc baze.
+
+- Zaimplementowano `PUT /api/employees/[id]` z walidacja id w sciezce i walidacja ciala przez Zod. Zwraca `200` ze zaktualizowanym pracownikiem; niepoprawne id/JSON/schemat zwracaja `400`, a brak pracownika zwraca `404`. Test: curl -i -X PUT http://localhost:3000/api/employees/5 \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"Ewa\",\"surname\":\"Lewandowska\",\"position\":\"Program Manager\",\"project\":\"Gamma Analytics\",\"hourlyRate\":82,\"hoursWorked\":112,\"status\":\"active\"}"
+
+- Zaimplementowano `DELETE /api/employees/[id]` z walidacja id. Zwraca `204` przy sukcesie, `400` dla niepoprawnego id i `404` gdy pracownik nie istnieje (testowane przez `curl`). `curl http://localhost:3000/api/employees`, `curl -i -X DELETE http://localhost:3000/api/employees/[id]`, potwierdzenie: `curl -i http://localhost:3000/api/employees/[id]`
+
+- Zaimplementowano `GET /api/employees/summary?project=X`, aby zwracac podsumowanie projektu (`totalCost`) i `employeeCount`; zweryfikowano przez `curl` (np. `{"project":"Acme Portal","totalCost":30330,"employeeCount":3}`).
+
+- Zaimplementowano modularyzacje frontendu przez podzial `src/app/page.tsx` na reuzywalne sekcje UI: `EmployeeFormSection`, `FiltersSection`, `ProjectSummarySection` i `EmployeesTable`, oraz przeniesiono wspolne modele/stale do `src/app/types/employee.ts`. Naprawiono problemy TypeScript przez przejscie na importy `@/app/components/...`, jawne typowanie `id` jako `number` oraz zamiane przestarzalego `React.FormEvent` na `React.SyntheticEvent<HTMLFormElement, SubmitEvent>` (zweryfikowane przez `npm run lint`). Testowano przez `npm run dev`, przechodzac flow `create`, `edit`, `delete`, `filter` i `summary`, oraz potwierdzono brak bledow TypeScript w edytorze.
+
+## Z dodatkowym czasem
+
+- Dodac `PATCH /api/employees/[id]` obok `PUT`, aby wspierac czesciowe aktualizacje (np. sama zmiana statusu) bez wysylania calego payloadu pracownika.
+- Dodac paginacje/sortowanie/wyszukiwanie dla `GET /api/employees` (`page`, `limit`, `sort`, `q`) pod wieksze zbiory danych.
+- Dodac testy backendowe (`Vitest`/`Jest`) dla route handlerow i przypadkow brzegowych walidacji (`400`/`404`/niepoprawny JSON).
+- Dodac optymistyczne aktualizacje UI + deduplikacje/cache zapytan (`React Query` lub `SWR`) w celu ograniczenia duplikatow fetch i poprawy responsywnosci.
+- Dodac lepsza obsluge pieniedzy/czasu (formatowanie waluty, bezpieczna matematyka dziesietna, reguly walidacji dla `hourlyRate`/`hoursWorked`).
+- Dodac uwierzytelnianie/autoryzacje (akcje oparte o role dla create/edit/delete).
+- Dodac metadane audytowe (`createdBy`, `updatedBy`, historia zmian) dla pelnej sledzalnosci.
+- Dodac lepszy UX/dostepnosc: toasty, modale potwierdzen, stany loading/empty/error, usprawnienia klawiaturowe i ARIA.
+- Dodac Docker + pipeline CI (`lint`, type-check, testy, build) dla spojnego local/dev deploymentu.
+- Przeniesc `project` do osobnej encji/tabeli z kluczami obcymi, aby poprawic integralnosc danych i raportowanie.
