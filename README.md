@@ -76,16 +76,27 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 
 - **Route handler typing** Next.js App Router route handlers use canonical RouteContext typing (async params) instead of inline context type literals; this standardizes typing only and does not change runtime behavior.
 
+- **Patch / Put** Employee edits are implemented with `PUT /api/employees/[id]` (full update) rather than `PATCH`, since the brief does not require partial updates.
+
 ## Development log per commit following scaffolding commit
 
-- Implemented `GET /api/employees` with optional `project` and `status` query filters. Tested with `curl`; empty database returns `[]`. (curl http://localhost:3000/api/employees)
+- Implemented `GET /api/employees` with optional `project` and `status` query filters. Tested with `curl`; empty database returns `[]`. `curl http://localhost:3000/api/employees`
 
-- Implemented `POST /api/employees` with Zod validation (`employeeSchema.safeParse`). Returns `201` with the created employee; invalid JSON or validation errors return `400` with `fieldErrors`. Tested with `curl`. (curl -X POST http://localhost:3000/api/employees \
+- Implemented `POST /api/employees` with Zod validation `employeeSchema.safeParse`. Returns `201` with the created employee; invalid JSON or validation errors return `400` with `fieldErrors`. Tested with `curl`. curl -X POST http://localhost:3000/api/employees \
   -H "Content-Type: application/json" \
-  -d "{\"name\":\"Anna\",\"surname\":\"Kowalska\",\"position\":\"Developer\",\"project\":\"Acme Portal\",\"hourlyRate\":85,\"hoursWorked\":120,\"status\":\"active\"}")
+  -d "{\"name\":\"Anna\",\"surname\":\"Kowalska\",\"position\":\"Developer\",\"project\":\"Acme Portal\",\"hourlyRate\":85,\"hoursWorked\":120,\"status\":\"active\"}"
 
 - Added `prisma/seed.ts` with 10 sample employees across three projects. Run `npm run db:seed` after migrate to populate the database; verified with `curl http://localhost:3000/api/employees`.
 
 - Implemented `GET /api/employees/[id]` with id validation (`400` invalid id, `404` not found, `200` when the row exists). Tested with `curl -i http://localhost:3000/api/employees/<id>`.
 
 - **Testing note:** Re-running `npm run db:seed` does not guarantee ids 1–10 (SQLite keeps auto-incrementing). Use an `id` from `GET /api/employees`, or run `npx prisma migrate reset` for a fresh database.
+
+- Implemented `PUT /api/employees/[id]` with path id validation and Zod request-body validation. Returns `200` with the updated employee; invalid id/JSON/schema return `400`, and missing employee returns `404`. Tested with: curl -i -X PUT http://localhost:3000/api/employees/5 \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"Ewa\",\"surname\":\"Lewandowska\",\"position\":\"Program Manager\",\"project\":\"Gamma Analytics\",\"hourlyRate\":82,\"hoursWorked\":112,\"status\":\"active\"}"
+
+
+## With more time
+
+- Add `PATCH /api/employees/[id]` alongside `PUT` to support partial updates (e.g., status-only changes) without requiring the full employee payload.
