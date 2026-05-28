@@ -100,6 +100,8 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 
 - Implemented `GET /api/employees/summary?project=X` to return project totals (`totalCost`) and `employeeCount`; verified with `curl` (e.g., `{"project":"Acme Portal","totalCost":30330,"employeeCount":3}`).
 
+- Implemented frontend modularization by splitting `src/app/page.tsx` into reusable UI sections: `EmployeeFormSection`, `FiltersSection`, `ProjectSummarySection`, and `EmployeesTable`, and moved shared models/constants to `src/app/types/employee.ts`. Fixed TypeScript issues by switching to `@/app/components/...` imports, typing `id` as `number`, and replacing deprecated `React.FormEvent` with `React.SyntheticEvent<HTMLFormElement, SubmitEvent>` (validated with `npm run lint`). Tested with `npm run dev` by exercising `create`, `edit`, `delete`, `filter`, and `summary` flows, then confirming no TypeScript errors in the editor.
+
 ## With more time
 
 - Add `PATCH /api/employees/[id]` alongside `PUT` to support partial updates (e.g., status-only changes) without requiring the full employee payload.
