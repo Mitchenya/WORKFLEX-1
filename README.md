@@ -98,6 +98,7 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 
 - Implemented `DELETE /api/employees/[id]` with id validation. Returns `204` on success, `400` for invalid id, and `404` when employee is not found (tested with `curl`). `curl http://localhost:3000/api/employees`, `curl -i -X DELETE http://localhost:3000/api/employees/[id]`, confirm `curl -i http://localhost:3000/api/employees/[id]`
 
+- Implemented `GET /api/employees/summary?project=X` to return project totals (`totalCost`) and `employeeCount`; verified with `curl` (e.g., `{"project":"Acme Portal","totalCost":30330,"employeeCount":3}`).
 
 ## With more time
 
