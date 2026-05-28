@@ -23,8 +23,64 @@ Verify the API: [http://localhost:3000/api/health](http://localhost:3000/api/hea
 | --- | --- |
 | `npm run dev` | Start the development server |
 | `npm run build` | Production build |
+| `npm run test` | Run unit tests (Vitest) |
 | `npm run db:migrate` | Apply Prisma migrations |
 | `npm run db:generate` | Regenerate Prisma client |
+
+## First run checklist
+
+```bash
+cp .env.example .env
+npm install
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+Use `npm run db:seed` only if you want sample data.
+
+## Testing
+
+Run tests with:
+
+```bash
+npm test
+```
+
+Current test coverage focuses on key API route logic:
+- Request validation and error handling (`400`, `404`)
+- Success responses for CRUD endpoints (`200`, `201`, `204`)
+- Project summary calculation (`totalCost`, `employeeCount`)
+
+## Troubleshooting (Windows)
+
+If `npm install` fails with an `EPERM` error mentioning:
+`query_engine-windows.dll.node`
+
+close running Node/Next processes (for example `npm run dev` terminals), then retry:
+
+```bash
+npm install
+```
+
+If needed, run:
+
+```bash
+npm install --ignore-scripts
+```
+
+then run Prisma generation manually after processes are stopped:
+
+```bash
+npx prisma generate
+```
+
+## API sanity checks
+
+```bash
+curl http://localhost:3000/api/health
+curl http://localhost:3000/api/employees
+```
 
 ## Stack
 
@@ -117,6 +173,11 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
 
 
 
+
+---
+
+## Polish version (`README` copy)
+
 # WORKFLEX-1
 
 Miniaplikacja do zarzadzania pracownikami i projektami (kontekst outsourcingu pracownikow WORKFLEX).
@@ -144,6 +205,18 @@ Sprawdz API: [http://localhost:3000/api/health](http://localhost:3000/api/health
 | `npm run build` | Buduje wersje produkcyjna |
 | `npm run db:migrate` | Wykonuje migracje Prisma |
 | `npm run db:generate` | Regeneruje klienta Prisma |
+
+## Pierwsze uruchomienie (checklista)
+
+```bash
+cp .env.example .env
+npm install
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+Uzyj `npm run db:seed` tylko, jesli chcesz dodac dane przykladowe.
 
 ## Stos technologiczny
 
