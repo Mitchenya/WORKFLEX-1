@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest, context: EmployeeRouteContext) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
-  
+
   const parsed = employeeSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -61,6 +61,22 @@ export async function PUT(request: NextRequest, context: EmployeeRouteContext) {
       data: parsed.data,
     });
     return NextResponse.json(updatedEmployee);
+  } catch {
+    return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+  }
+}
+
+export async function DELETE(_request: NextRequest, context: EmployeeRouteContext) {
+  const { id } = await context.params;
+  const employeeId = parseEmployeeId(id);
+
+  if (!employeeId) {
+    return NextResponse.json({ error: "Invalid employee ID" }, { status: 400 });
+  }
+
+  try {
+    await prisma.employee.delete({ where: { id: employeeId } });
+    return new NextResponse(null, { status: 204 });
   } catch {
     return NextResponse.json({ error: "Employee not found" }, { status: 404 });
   }

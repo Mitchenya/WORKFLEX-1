@@ -96,6 +96,8 @@ Out of scope: polished styling, authorization, deployment, E2E testing. Unit tes
   -H "Content-Type: application/json" \
   -d "{\"name\":\"Ewa\",\"surname\":\"Lewandowska\",\"position\":\"Program Manager\",\"project\":\"Gamma Analytics\",\"hourlyRate\":82,\"hoursWorked\":112,\"status\":\"active\"}"
 
+- Implemented `DELETE /api/employees/[id]` with id validation. Returns `204` on success, `400` for invalid id, and `404` when employee is not found (tested with `curl`). `curl http://localhost:3000/api/employees`, `curl -i -X DELETE http://localhost:3000/api/employees/[id]`, confirm `curl -i http://localhost:3000/api/employees/[id]`
+
 
 ## With more time
 
